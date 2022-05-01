@@ -66,7 +66,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "C:\Users\11matt556\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default\BepInEx\plugins\11matt556-ReusableMetadata_DEV"
-copy /Y "$(TargetPath)" "$(ProjectDir)/Packaging"
-copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/Packaging"</PostBuildEvent>
+copy /Y "$(TargetPath)" "$(ProjectDir)/Package"
+copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/Package"</PostBuildEvent>
   </PropertyGroup>
 </Project>
