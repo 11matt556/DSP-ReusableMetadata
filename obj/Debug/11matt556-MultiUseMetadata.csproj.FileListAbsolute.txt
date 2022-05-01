@@ -1,0 +1,12 @@
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\11matt556-MultiUseMetadata.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\11matt556-MultiUseMetadata.pdb
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\Assembly-CSharp.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\BepInEx.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\BepInEx.Harmony.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\UnityEngine.CoreModule.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\bin\Debug\UnityEngine.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\obj\Debug\11matt556-MultiUseMetadata.csproj.AssemblyReference.cache
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\obj\Debug\11matt556-MultiUseMetadata.csproj.CoreCompileInputs.cache
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\obj\Debug\11matt556-MultiUseMetadata.csproj.CopyComplete
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\obj\Debug\11matt556-MultiUseMetadata.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-MultiUseMetadata\obj\Debug\11matt556-MultiUseMetadata.pdb
