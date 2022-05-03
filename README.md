@@ -20,7 +20,7 @@ The mod changes Metadata to behave more like I envisioned when I first heard abo
 
 Partially inspired by reddit post https://www.reddit.com/r/Dyson_Sphere_Program/comments/u9l3wv/metadata_usage/
 
-Let me know on the github page if you have any issues. It seems to work fine on my games now but there are probably weird things that can happen when this is added or removed from current games eith existing metadata consumption that I havent caught or thought about yet.
+Let me know on the github page if you have any issues. It seems to work fine on my games but there are probably weird things that can happen when this is added or removed from current games with existing metadata consumption.
 
 ## Change Log
 
