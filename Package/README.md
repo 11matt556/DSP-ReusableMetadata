@@ -20,12 +20,12 @@ The mod changes Metadata to behave more like I envisioned when I first heard abo
 
 Partially inspired by reddit post https://www.reddit.com/r/Dyson_Sphere_Program/comments/u9l3wv/metadata_usage/
 
-Let me know on the github page if you have any issues. It seems to work fine on my games now but there are probably weird things that can happen when this is added or removed from current games eith existing metadata consumption that I havent caught or thought about yet.
+Let me know if you have any issues. It seems to work fine on my games but there are probably weird things that can happen when this is added or removed from current games with existing metadata consumption.
 
 ## Change Log
 
 - Version 1.0.0:
-	- Re-release. The mod is actually feature complete and should work as expected now. 
+	- Re-release. The mod is feature complete and should work as expected now. 
 	- Bugfix: Bugs that could duplicate metadata should now be fixed 
 	- Bugfix: The 'Net Metadata' UI field is now being used correctly.
 	- Finished this readme with examples and more info
