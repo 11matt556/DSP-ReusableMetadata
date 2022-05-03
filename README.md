@@ -25,11 +25,13 @@ Let me know on the github page if you have any issues. It seems to work fine on 
 ## Change Log
 
 - Version 1.0.0:
-	- Re-release. Major bug that could duplicate metadata should now be fixed Users of the old mod should delete it and use this version.
-	- Updated this readme with examples and more info
+	- Re-release. The mod is actually feature complete and should work as expected now. 
+	- Bugfix: Bugs that could duplicate metadata should now be fixed 
+	- Bugfix: The 'Net Metadata' UI field is now being used correctly.
+	- Finished this readme with examples and more info
 
 - Version 0.1.0:
-	- Initial accidental release uploaded at https://dsp.thunderstore.io/package/Myself/ReusableMetadata/
+	- Initial accidental release uploaded at https://dsp.thunderstore.io/package/Myself/ReusableMetadata/. Users of this old version should delete it. It was incomplete and did not work as expected.
 
 ## Configuration Options
 
@@ -41,4 +43,4 @@ verboseLogging|bool|false|For debugging.
 
 ## Ideas for additional features/changes
 - Fix vanilla bug/oversight that causes Metadata to be lost if you quit the game after using Metadata but before saving
-- Updated UI tooltip explanations to reflect the changes made by this mod
+- Update UI tooltip explanations to reflect the changes made by this mod
