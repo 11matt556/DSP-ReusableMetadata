@@ -1,4 +1,5 @@
 
+
 # Reusable Metadata Mod
 ## Recommended: Back up your save data and property folder in Documents\Dyson Sphere Program\ before running this mod. 
 
@@ -6,6 +7,7 @@ The mod changes Metadata to behave more like I envisioned when I first heard abo
 
  - Consumption
 	- Consumption of other cluster addresses no longer count against your net total of Metadata. This allows you to start every new cluster seed with your maximum amount of metadata, no matter how much has been spent in previous saved games.
+	- Does not use the property file for the Consumption value of the current cluster. This addresses a vanilla bug that causes Metadata to be lost in some cases, but has some additional effects (See version 1.0.1 change note)
 
  - Production (Optional)
 	- Only the best Metadata values from each of your cluster seeds is counted when `useHighestProductionOnly` is enabled. Metadata can be thought of as a 'high score' when this is enabled. 
@@ -26,6 +28,12 @@ Let me know if you have any issues at https://github.com/11matt556/DSP-ReusableM
 
 ## Change Log
 
+- Version 1.0.1:
+	- Bugfix: Enabling useHighestProductionOnly did not work correctly unless verboseLogging was also enabled
+	- Bugfix: Fixed issue in base game that could cause Metadata to be lost when exiting without saving! The fix I used has the following extra side effects/features:
+		- Loading an older save of your current seed will also "roll back" any Metadata consumed after that save was created. (Sounds good to me!)
+		- Removing the property file will no longer reset "Current Game Realization", but does reset all other stats, including production/contribution (Makes 'cheating' Metadata harder)
+
 - Version 1.0.0:
 	- Re-release. The mod is feature complete and should work as expected now. 
 	- Bugfix: Bugs that could duplicate metadata should now be fixed 
@@ -44,5 +52,7 @@ useHighestProductionOnly|bool|false|When True, only metadata contributions from 
 verboseLogging|bool|false|For debugging.
 
 ## Ideas for additional features/changes
-- Fix vanilla bug/oversight that causes Metadata to be lost if you quit the game after using Metadata but before saving
 - Update UI tooltip explanations to reflect the changes made by this mod
+
+## Known Issues
+- The "Total Realization" stat can be misleading/incorrect. Metadata is still counted in "Total Realization" even if the realization/consumption was not counted by this mod. This bug can happen in Vanilla, but is much easier to trigger when using this mod.
