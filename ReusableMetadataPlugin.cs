@@ -56,7 +56,7 @@ namespace ReusableMetadata
             gameSaveConsTextDict.Add(6006, -1);
 
             useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Otherwise, Metadata production is unaffected. Metadata can be thought of as a 'high score' with this setting enabled.");
-            useVerboseLogging = Config.Bind("Logging", "verboseLogging", true, "For debuging.");
+            useVerboseLogging = Config.Bind("Logging", "verboseLogging", false, "For debuging.");
 
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");

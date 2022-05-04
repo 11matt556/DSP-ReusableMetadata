@@ -11,3 +11,4 @@ D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-Reus
 D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-ReusableMetadata\bin\Release\UnityEngine.CoreModule.dll
 D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-ReusableMetadata\bin\Release\UnityEngine.dll
 D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-ReusableMetadata\bin\Release\UnityEngine.UI.dll
+D:\Documents\Personal Programming Projects\Visual Studio Projects\11matt556-ReusableMetadata\bin\Release\BepInEx.dll
