@@ -6,7 +6,7 @@
 The mod changes Metadata to behave more like I envisioned when I first heard about a "NewGame+" mode in DSP. It makes the following changes:
 
  - Consumption
-	- Consumption of other cluster addresses no longer count against your net total of Metadata. This allows you to start every new cluster seed with your maximum amount of metadata, no matter how much has been spent in previous saved games.
+	- Consumption of other cluster addresses no longer counts against your net total of Metadata or your available Metadata. This allows you to start every new cluster seed with your maximum amount of metadata, no matter how much has been spent in previous saved games.
 	- Does not use the property file for the Consumption value of the current cluster. This addresses a vanilla bug that causes Metadata to be lost in some cases, but has some additional effects (See version 1.0.1 change note)
 
  - Production (Optional)
@@ -24,9 +24,12 @@ Partially inspired by reddit post https://www.reddit.com/r/Dyson_Sphere_Program/
 
 It seems to work fine on my games but there are probably weird things that can happen when this is added or removed from current games with existing metadata consumption.
 
-Let me know if you have any issues at https://github.com/11matt556/DSP-ReusableMetadata
+Let me know if you have suggestions or issues at https://github.com/11matt556/DSP-ReusableMetadata
 
 ## Change Log
+
+- Version 1.0.2:
+	- Removed error logging for negative amounts of Metadata since logging this is redundant. It is clearly visible in the UI if this occurs.
 
 - Version 1.0.1:
 	- Bugfix: Enabling useHighestProductionOnly did not work correctly unless verboseLogging was also enabled

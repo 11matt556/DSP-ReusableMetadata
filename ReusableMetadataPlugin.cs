@@ -26,12 +26,13 @@ namespace ReusableMetadata
 
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.1";
+        public const string pluginVersion = "1.0.2";
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
         public static IDictionary<int, long> topSeedForItem;
         public static IDictionary<int, int> gameSaveConsTextDict;
+
 
         public void Awake()
         {
@@ -39,7 +40,7 @@ namespace ReusableMetadata
             topSeedForItem = new Dictionary<int, long>();
             gameSaveConsTextDict = new Dictionary<int, int>();
             Harmony harmony = new Harmony(pluginGuid);
-            
+
             // Why is this needed here? Adding to dict later does not work...
             topSeedForItem.Add(6001, -1);
             topSeedForItem.Add(6002, -1);
@@ -56,7 +57,7 @@ namespace ReusableMetadata
             gameSaveConsTextDict.Add(6006, -1);
 
             useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Otherwise, Metadata production is unaffected. Metadata can be thought of as a 'high score' with this setting enabled.");
-            useVerboseLogging = Config.Bind("Logging", "verboseLogging", false, "For debuging.");
+            useVerboseLogging = Config.Bind("Logging", "verboseLogging", false, "For debugging.");
 
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");
@@ -71,6 +72,7 @@ namespace ReusableMetadata
         [HarmonyPrefix]
         public static bool GetItemTotalProperty_Patch(int itemId, PropertySystem __instance, ref int __result) //Corresponds to the 'Net Amount' number at the top of the Metadata panel
         {
+            //GameMain.history.GetPropertyItemComsumption(itemId); 
             long currentClusterSeedKey = GameMain.data.GetClusterSeedKey();
             int maxProductionAmount = 0;
             int netTotalMetadata = 0;
@@ -107,15 +109,7 @@ namespace ReusableMetadata
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 ReusableMetadataPlugin.logger.LogInfo("GetItemTotalProperty_Patch ID=" + itemId + " Calculated Total=" + netTotalMetadata);
 
-            if (netTotalMetadata < 0)
-            {
-                ReusableMetadataPlugin.logger.LogError("GetItemTotalProperty_Patch: Less than 0 Net Total Metadata. This is probably a bug!");
-                //__result = 0; Make it very obvious that things broke
-            }
-            else
-            {
-                __result = netTotalMetadata;
-            }
+            __result = netTotalMetadata;
             return false;
         }
 
@@ -135,18 +129,11 @@ namespace ReusableMetadata
             {
                 availableMetadata = 0;
             }
-            if (availableMetadata <= 0)
-            {
-                ReusableMetadataPlugin.logger.LogError("GetItemAvaliableProperty_Patch_PreCalc: Less than 0 Metadata available. This is probably a bug!");
-                //__result = 0; Make it very obvious that things broke
-                //return false;
-            }
 
             //Make sure we only run calculations on current seed
             if (GameMain.data.GetClusterSeedKey() == seedKey)
             {
                 // Only subtract consumption of current seed, not all seeds.
-               // availableMetadata -= __instance.GetItemConsumption(seedKey, itemId);
                 availableMetadata -= ReusableMetadataPlugin.gameSaveConsTextDict[itemId];
 
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
@@ -168,15 +155,10 @@ namespace ReusableMetadata
                 }
             }
 
-            if (availableMetadata < 0)
-            {
-                ReusableMetadataPlugin.logger.LogError("GetItemAvaliableProperty_Patch_PostCalc: Less than 0 Metadata available. This is probably a bug!");
-                //__result = 0; Make it very obvious that things broke 
-            }
-
-            __result = availableMetadata;
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch_Result={__result} ID={itemId} ");
+
+            __result = availableMetadata;
 
             return false;
         }
