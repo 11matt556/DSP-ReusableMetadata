@@ -26,7 +26,7 @@ namespace ReusableMetadata
 
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.2";
+        public const string pluginVersion = "1.0.3";
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
@@ -62,6 +62,7 @@ namespace ReusableMetadata
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");
 
+
         }
     }
 
@@ -79,6 +80,7 @@ namespace ReusableMetadata
 
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 ReusableMetadataPlugin.logger.LogInfo("Current Seed " + currentClusterSeedKey);
+
 
             for (int i = 0; i < __instance.propertyDatas.Count; i++)
             {
@@ -110,6 +112,7 @@ namespace ReusableMetadata
                 ReusableMetadataPlugin.logger.LogInfo("GetItemTotalProperty_Patch ID=" + itemId + " Calculated Total=" + netTotalMetadata);
 
             __result = netTotalMetadata;
+            
             return false;
         }
 
@@ -163,14 +166,14 @@ namespace ReusableMetadata
             return false;
         }
 
-        [HarmonyPatch(typeof(UIPropertyEntry), nameof(UIPropertyEntry.UpdateUITexts))]
+        [HarmonyPatch(typeof(UIPropertyEntry), nameof(UIPropertyEntry.UpdateUIElements))]
         [HarmonyPostfix]
-        public static void UpdateUITexts_Patch(UIPropertyEntry __instance)
+        public static void UpdateUIElements_Patch(UIPropertyEntry __instance)
         {
             ReusableMetadataPlugin.gameSaveConsTextDict[__instance.itemId] = Int32.Parse(__instance.gamesaveConsText.text);
 
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
-                ReusableMetadataPlugin.logger.LogInfo($"UpdateUITexts_Patch={__instance.gamesaveConsText.text} ID={__instance.itemId} ");
+                ReusableMetadataPlugin.logger.LogInfo($"UpdateUIElements_Patch={__instance.gamesaveConsText.text} ID={__instance.itemId} ");
         }
     }
 
