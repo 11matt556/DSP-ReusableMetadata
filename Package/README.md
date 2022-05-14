@@ -28,7 +28,8 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 
 ## Change Log
 
-
+- Version 1.0.3:
+	- Compatibility fix for game version 0.9.25.12201
 
 - Version 1.0.2:
 	- Removed error logging for negative amounts of Metadata since logging this is redundant. It is clearly visible in the UI if this occurs.
