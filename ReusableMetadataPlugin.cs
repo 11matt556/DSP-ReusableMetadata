@@ -3,7 +3,6 @@ using HarmonyLib;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
 
 // TODO: Try to fix vanilla bug of spent metadata being lost when spent but game is not saved.
@@ -23,10 +22,9 @@ namespace ReusableMetadata
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class ReusableMetadataPlugin : BaseUnityPlugin
     {
-
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.3";
+        public const string pluginVersion = "1.0.4";
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;

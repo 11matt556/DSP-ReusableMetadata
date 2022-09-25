@@ -27,6 +27,8 @@ It seems to work fine on my games but there are probably weird things that can h
 Let me know if you have suggestions or issues at https://github.com/11matt556/DSP-ReusableMetadata
 
 ## Change Log
+- Version 1.0.4:
+	- Project Dependencies managed through NuGet now
 
 - Version 1.0.3:
 	- Compatibility fix for game version 0.9.25.12201
