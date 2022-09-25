@@ -1,5 +1,4 @@
 *.zip
-Libraries/
 bin/
 obj/
 
