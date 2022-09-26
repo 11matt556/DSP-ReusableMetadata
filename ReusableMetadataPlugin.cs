@@ -3,6 +3,7 @@ using HarmonyLib;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using System.Collections.Generic;
+using System.IO;
 
 // Note to self: Property... classes are actually 'lower' than the Game... objects. Generally, Property... objects seem to be called first (and by the Game... objects) to read and write the property file.
 
@@ -16,13 +17,15 @@ namespace ReusableMetadata
     {
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.5";
-        public static ManualLogSource logger;
+        public const string pluginVersion = "1.0.6";
+
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
         public static ConfigEntry<bool> useSandboxCheat;
-        public static IDictionary<int, long> topSeedForItem;
+        public static ConfigEntry<bool> useSeparatePropertyDirectory;
 
+        public static IDictionary<int, long> topSeedForItem;
+        public static ManualLogSource logger;
 
         public void Awake()
         {
@@ -41,6 +44,8 @@ namespace ReusableMetadata
             useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Metadata can be thought of as a 'high score' with this setting enabled. When false, Metadata production is unchanged unchanged from Vanilla.");
             useVerboseLogging = Config.Bind("Debugging", "verboseLogging", false, "For debugging.");
             useSandboxCheat = Config.Bind("Debugging", "enableSandboxCheat", false, "Bumps sandbox metadata from None to 4x multipler. Use at your own risk.");
+            useSandboxCheat = Config.Bind("Behaviour", "useSeparatePropertyDirectory", true, "Use a separate file to track the metadata when using this mod. Reccomended to leave this enabled unless you have manually backed up your vanilla property directory.");
+
 
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");
@@ -160,7 +165,7 @@ namespace ReusableMetadata
         [HarmonyPatch(typeof(GameDesc))]
         [HarmonyPatch("propertyMultiplier", MethodType.Getter)]
         [HarmonyPostfix]
-        public static void Get_propertyMultiplier_Patch(GameDesc __instance, ref float __result)
+        public static void PropertyMultiplier_Patch(GameDesc __instance, ref float __result)
         {
             // Give 4x multiplier in sandbox mode if useSandboxCheat is set.
             // Note: Not really tested this.
@@ -168,6 +173,55 @@ namespace ReusableMetadata
             {
                 __result = 4f;
             }
+        }
+
+        [HarmonyPatch(typeof(GameConfig))]
+        [HarmonyPatch("propertyFolder", MethodType.Getter)]
+        [HarmonyPostfix]
+        public static void PropertyFolder_Patch(ref string __result)
+        {
+
+            if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: __result={__result}");
+
+            string propertyFileName = $"{AccountData.me.userId}"; // Same as Vanilla
+            string baseDir = Path.Combine(Paths.ConfigPath, ReusableMetadataPlugin.pluginName.Replace(" ", ""));
+            string myPropertyDir = Path.Combine(baseDir, "Property");
+
+            // Create property the custom directory if it doesnt exist
+            if (!Directory.Exists(myPropertyDir))
+            {
+                Directory.CreateDirectory(myPropertyDir);
+            }
+
+            string myPropertyPath = Path.Combine(myPropertyDir, propertyFileName);
+            string vanillaPropertyPath = Path.Combine(__result, propertyFileName);
+
+            if (ReusableMetadataPlugin.useVerboseLogging.Value)
+            {
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: baseDir={baseDir}");
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: vanillaPropertyPath={vanillaPropertyPath}");
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: myPropertyDir={myPropertyDir}");
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: myPropertyPath={myPropertyPath}");
+                ReusableMetadataPlugin.logger.LogInfo($"propertyFolder_Patch: vanillaPropertyPath={vanillaPropertyPath}");
+            }
+
+
+            // If the custom property file doesn't exist, copy the existing property file as a starting point
+            if (!File.Exists(myPropertyPath))
+            {
+                if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                    ReusableMetadataPlugin.logger.LogInfo($"Copying from {vanillaPropertyPath} to {myPropertyPath}");
+
+                File.Copy(vanillaPropertyPath, myPropertyPath);
+            }
+
+
+
+            //TODO: Check that propertyFileName exists in the default directory. If it doesn't then throw an error that is visible to user. (Should only happen if an update breaks things)
+            // Finally, set the rsult so that the new property file is used
+            //__result = myPropertyDir;
+
         }
     }
 }
