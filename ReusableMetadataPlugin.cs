@@ -3,19 +3,11 @@ using HarmonyLib;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using System.Collections.Generic;
-using System;
 
-// TODO: Try to fix vanilla bug of spent metadata being lost when spent but game is not saved.
-// The 'Current Game Utilization' number displayed in the UI does NOT include the metadata lost due to not saving and so should be the more trusted 
-// It is not entirely clear to me where this "current game realization' number is derived.
-// Presumably 'Current Game Realization' is in the save data while the number being used by the game (I assume GetItemConsumption) is being read from the property/metadata file.
-// Looks like 'Current Game Realization' is in UIPropertyEntry,UpdateUITexts, this.gamesaveConsText.text. Interestingly, this links back to the same GetItemConsumption function...
-// In theory, this.gamesaveConsText.text calls GetItemConsumption and so should == GetItemConsumption used by GetItemTotalProperty but I'm not sure that it does in practice
-// this.gamesaveConsText.text != GetItemConsumption in GetItemTotalProperty when Metadata has been lost. this.gamesaveConsText.text is the more accurate value.
-// Maybe ClusterPropertyData used by PropertySystem loads from the property file, but the ClusterPropertyData in GameHistoryData (used by UIPropertyEntry) is loaded from the save.
-// I don't see where this happens in the code, but that seems to be the behavior.
+// Note to self: Property... classes are actually 'lower' than the Game... objects. Generally, Property... objects seem to be called first (and by the Game... objects) to read and write the property file.
 
 // TODO: Update UI tooltips to match mod behaviour
+// TODO: See if there is a way to fix the inaccurate Realization value
 
 namespace ReusableMetadata
 {
@@ -24,19 +16,18 @@ namespace ReusableMetadata
     {
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.4";
+        public const string pluginVersion = "1.0.5";
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
+        public static ConfigEntry<bool> useSandboxCheat;
         public static IDictionary<int, long> topSeedForItem;
-        public static IDictionary<int, int> gameSaveConsTextDict;
 
 
         public void Awake()
         {
             logger = Logger;
             topSeedForItem = new Dictionary<int, long>();
-            gameSaveConsTextDict = new Dictionary<int, int>();
             Harmony harmony = new Harmony(pluginGuid);
 
             // Why is this needed here? Adding to dict later does not work...
@@ -47,20 +38,12 @@ namespace ReusableMetadata
             topSeedForItem.Add(6005, -1);
             topSeedForItem.Add(6006, -1);
 
-            gameSaveConsTextDict.Add(6001, -1);
-            gameSaveConsTextDict.Add(6002, -1);
-            gameSaveConsTextDict.Add(6003, -1);
-            gameSaveConsTextDict.Add(6004, -1);
-            gameSaveConsTextDict.Add(6005, -1);
-            gameSaveConsTextDict.Add(6006, -1);
-
-            useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Otherwise, Metadata production is unaffected. Metadata can be thought of as a 'high score' with this setting enabled.");
-            useVerboseLogging = Config.Bind("Logging", "verboseLogging", false, "For debugging.");
+            useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Metadata can be thought of as a 'high score' with this setting enabled. When false, Metadata production is unchanged unchanged from Vanilla.");
+            useVerboseLogging = Config.Bind("Debugging", "verboseLogging", false, "For debugging.");
+            useSandboxCheat = Config.Bind("Debugging", "enableSandboxCheat", false, "Bumps sandbox metadata from None to 4x multipler. Use at your own risk.");
 
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");
-
-
         }
     }
 
@@ -69,11 +52,13 @@ namespace ReusableMetadata
     {
         [HarmonyPatch(typeof(PropertySystem), nameof(PropertySystem.GetItemTotalProperty))]
         [HarmonyPrefix]
-        public static bool GetItemTotalProperty_Patch(int itemId, PropertySystem __instance, ref int __result) //Corresponds to the 'Net Amount' number at the top of the Metadata panel
+        public static bool GetItemTotalProperty_Patch(int itemId, PropertySystem __instance, ref int __result)
         {
+            //GetItemTotalProperty corresponds to the large 'Amount' number at the very top of the Metadata panel
+
             //GameMain.history.GetPropertyItemComsumption(itemId); 
             long currentClusterSeedKey = GameMain.data.GetClusterSeedKey();
-            int maxProductionAmount = 0;
+            int productionHighScore = 0;
             int netTotalMetadata = 0;
 
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
@@ -88,16 +73,17 @@ namespace ReusableMetadata
 
                 int production = clusterPropertyData.GetItemProduction(itemId);
 
-                // Use only the maximum value for the metadata amount, Otherwise, sum production of clusters like Vanilla does
+                // If useHighestProductionOnly is set, find the highest metadata value out of all clusters and ignore the others.
                 if (ReusableMetadataPlugin.useHighestProductionOnly.Value)
                 {
-                    if (production > maxProductionAmount)
+                    if (production > productionHighScore)
                     {
-                        maxProductionAmount = production;
-                        netTotalMetadata = maxProductionAmount;
+                        productionHighScore = production;
+                        netTotalMetadata = productionHighScore;
                         ReusableMetadataPlugin.topSeedForItem[itemId] = clusterPropertyData.seedKey;
                     }
                 }
+                // Otherwise, just add up the production of all clusters. This is what the Vanilla game does.
                 else
                 {
                     if (ReusableMetadataPlugin.useVerboseLogging.Value)
@@ -110,14 +96,20 @@ namespace ReusableMetadata
                 ReusableMetadataPlugin.logger.LogInfo("GetItemTotalProperty_Patch ID=" + itemId + " Calculated Total=" + netTotalMetadata);
 
             __result = netTotalMetadata;
-            
+
             return false;
         }
 
-        [HarmonyPatch(  typeof(PropertySystem),
-                        nameof(PropertySystem.GetItemAvaliableProperty),
-                        new[] {typeof(long),typeof(int)}
-        )]
+        [HarmonyPatch(
+            typeof(PropertySystem),
+            nameof(PropertySystem.GetItemAvaliableProperty),
+            new[]
+            {
+                typeof(long),
+                typeof(int)
+            }
+            )
+         ]
         [HarmonyPrefix]
         public static bool GetItemAvaliableProperty_Patch(long seedKey, int itemId, PropertySystem __instance, ref int __result)
         {
@@ -125,33 +117,34 @@ namespace ReusableMetadata
             int availableMetadata = __instance.GetItemTotalProperty(itemId); //Start with all metadata
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch_Start={availableMetadata} ID={itemId} ");
-            
-            if (GameMain.gameScenario != null && !GameMain.gameScenario.propertyLogic.isSelfFormalGame)
-            {
-                availableMetadata = 0;
-            }
 
-            //Make sure we only run calculations on current seed
+            // Sanity check to make sure we are acting on the current seed.
             if (GameMain.data.GetClusterSeedKey() == seedKey)
             {
-                // Only subtract consumption of current seed, not all seeds.
-                availableMetadata -= ReusableMetadataPlugin.gameSaveConsTextDict[itemId];
+                // Only subtract metadata consumed of current seed, not all seeds. This one line is really the main point of this whole mod...
+                // Important thing to remember! 
+                // GameMain.history.GetPropertyItemComsumption reads the game data itself. It will OVERRULE whatever is in the property file
+                // PropertySystem.GetItemConsumption reads from the property file itself! 
+                // I use GameMain.history here because it seems to prtevent the vanilla bug where metadata is lost when realizing and exiting without saving.
+
+                //availableMetadata -= ReusableMetadataPlugin.gameSaveConsTextDict[itemId];
+                availableMetadata -= GameMain.history.GetPropertyItemComsumption(itemId);
+                //availableMetadata -= __instance.GetItemConsumption(seedKey, itemId);
 
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 {
-                    ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} GetItemConsumption={__instance.GetItemConsumption(seedKey, itemId)} seed={seedKey}");
-                    ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} gameSaveConsText={ReusableMetadataPlugin.gameSaveConsTextDict[itemId]} seed={seedKey}");
+                    ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} PropertySystem.GetItemConsumption={__instance.GetItemConsumption(seedKey, itemId)} seed={seedKey}");
+                    ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} GameMain.history.GetPropertyItemComsumption={GameMain.history.GetPropertyItemComsumption(itemId)} seed={seedKey}");
                 }
-
-                // Prevent Metadata generated on current seed from being spent on the current seed (Vanilla) by subtracting contributed production
-                // If we are top seed we definitely contributed
-                if (ReusableMetadataPlugin.topSeedForItem[itemId] == seedKey)
+                
+                // Make sure we can't spend metadata from the current seed.
+                if (ReusableMetadataPlugin.useHighestProductionOnly.Value && seedKey != ReusableMetadataPlugin.topSeedForItem[itemId])
                 {
-                    availableMetadata -= __instance.GetItemProduction(seedKey, itemId);
+                    // Do nothing because we did not actually contribute any metadata to the total.
                 }
-                // If we are not top seed we only contributed if useHighestProductionOnly is false
-                else if (!ReusableMetadataPlugin.useHighestProductionOnly.Value)
+                else
                 {
+                    // This production contributed to the total metadata and so needs to be removed from the available metadata.
                     availableMetadata -= __instance.GetItemProduction(seedKey, itemId);
                 }
             }
@@ -164,16 +157,16 @@ namespace ReusableMetadata
             return false;
         }
 
-        [HarmonyPatch(typeof(UIPropertyEntry), nameof(UIPropertyEntry.UpdateUIElements))]
+        [HarmonyPatch(typeof(GameDesc))]
+        [HarmonyPatch("propertyMultiplier", MethodType.Getter)]
         [HarmonyPostfix]
-        public static void UpdateUIElements_Patch(UIPropertyEntry __instance)
+        public static void Get_propertyMultiplier_Patch(GameDesc __instance, ref float __result)
         {
-            ReusableMetadataPlugin.gameSaveConsTextDict[__instance.itemId] = Int32.Parse(__instance.gamesaveConsText.text);
-
-            if (ReusableMetadataPlugin.useVerboseLogging.Value)
-                ReusableMetadataPlugin.logger.LogInfo($"UpdateUIElements_Patch={__instance.gamesaveConsText.text} ID={__instance.itemId} ");
+            // Give 4x multiplier in sandbox mode if useSandboxCheat is set.
+            // Note: Not really tested this.
+            if (__instance.isSandboxMode && ReusableMetadataPlugin.useSandboxCheat.Value)
+            {
+                __result = 4f;
+            }
         }
-    }
-
-
 }

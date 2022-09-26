@@ -27,6 +27,11 @@ It seems to work fine on my games but there are probably weird things that can h
 Let me know if you have suggestions or issues at https://github.com/11matt556/DSP-ReusableMetadata
 
 ## Change Log
+
+- Version 1.0.5:
+	- Bugfix: Use GetItemConsumption from PropertySystem instead of UIPropertyEntry to (hopefully) address Github issues #1 and #2.
+	- Feature: New config option to allow 4x metadata generation in sandbox mode. Intended for debugging and testing. Use at your own risk.
+
 - Version 1.0.4:
 	- Project Dependencies managed through NuGet now
 
@@ -39,8 +44,8 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 - Version 1.0.1:
 	- Bugfix: Enabling useHighestProductionOnly did not work correctly unless verboseLogging was also enabled
 	- Bugfix: Fixed issue in base game that could cause Metadata to be lost when exiting without saving! The fix I used has the following extra side effects/features:
-		- Loading an older save of your current seed will also "roll back" any Metadata consumed after that save was created. (Sounds good to me!)
-		- Removing the property file will no longer reset "Current Game Realization", but does reset all other stats, including production/contribution (Makes 'cheating' Metadata harder)
+		- Loading an older save of your current seed will also "roll back" any Metadata consumed after that save was created. (Thats good!)
+		- Removing the property file will no longer reset "Current Game Realization", but does reset all other stats, including production/contribution (That's.... maybe bad? It makes cheating harder...)
 
 - Version 1.0.0:
 	- Re-release. The mod is feature complete and should work as expected now. 
@@ -58,9 +63,11 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 |---|---|---|---|
 useHighestProductionOnly|bool|false|When True, only metadata contributions from your highest production cluster will be available. Otherwise, Metadata production is unaffected. Metadata can be thought of as a 'high score' with this setting enabled.
 verboseLogging|bool|false|For debugging.
+enableSandboxCheat|bool|false|Intended for debugging and quick testing. Bumps sandbox metadata from None to 4x multipler. Use at your own risk.
 
 ## Ideas for additional features/changes
 - Update UI tooltip explanations to reflect the changes made by this mod
+- Set aside a custom property file to make mod removal and testing easier
 
 ## Known Issues
 - The "Total Realization" stat can be misleading/incorrect. Metadata is still counted in "Total Realization" even if the realization/consumption was not counted by this mod. This bug can happen in Vanilla, but is much easier to trigger when using this mod.
