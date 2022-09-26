@@ -136,7 +136,7 @@ namespace ReusableMetadata
                     ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} PropertySystem.GetItemConsumption={__instance.GetItemConsumption(seedKey, itemId)} seed={seedKey}");
                     ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} GameMain.history.GetPropertyItemComsumption={GameMain.history.GetPropertyItemComsumption(itemId)} seed={seedKey}");
                 }
-                
+
                 // Make sure we can't spend metadata from the current seed.
                 if (ReusableMetadataPlugin.useHighestProductionOnly.Value && seedKey != ReusableMetadataPlugin.topSeedForItem[itemId])
                 {
@@ -169,4 +169,5 @@ namespace ReusableMetadata
                 __result = 4f;
             }
         }
+    }
 }

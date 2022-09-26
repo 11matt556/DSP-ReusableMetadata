@@ -1,0 +1,1 @@
+tar --exclude='*.zip' -C ThunderstorePackage -cavf ThunderstorePackage.zip * 

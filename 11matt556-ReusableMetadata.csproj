@@ -287,8 +287,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default\BepInEx\plugins\11matt556-ReusableMetadata_DEV"
-copy /Y "$(TargetPath)" "$(ProjectDir)/Package"
-copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/Package"</PostBuildEvent>
+copy /Y "$(TargetPath)" "$(ProjectDir)/ThunderstorePackage"
+copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/ThunderstorePackage"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets" Condition="Exists('packages\BepInEx.Core.5.4.21\build\BepInEx.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
