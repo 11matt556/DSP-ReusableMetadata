@@ -28,8 +28,11 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 
 ## Change Log
 
+- Version 1.0.6: 
+	- Fixed mistake in readme
+
 - Version 1.0.5:
-	- Bugfix: Use GetItemConsumption from PropertySystem instead of UIPropertyEntry to (hopefully) address Github issues #1 and #2.
+	- Bugfix: Use GetPropertyItemComsumption from GameMain.history instead of UIPropertyEntry to (hopefully) address Github issues #1 and #2.
 	- Feature: New config option to allow 4x metadata generation in sandbox mode. Intended for debugging and testing. Use at your own risk.
 
 - Version 1.0.4:
