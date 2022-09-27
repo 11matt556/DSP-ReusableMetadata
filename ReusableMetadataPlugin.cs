@@ -17,7 +17,7 @@ namespace ReusableMetadata
     {
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.6";
+        public const string pluginVersion = "1.1.0";
 
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
