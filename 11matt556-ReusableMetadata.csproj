@@ -51,7 +51,7 @@
       <HintPath>packages\HarmonyX.2.7.0\lib\net45\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\Assembly-CSharp.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx, Version=5.4.21.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\BepInEx.BaseLib.5.4.21\lib\net35\BepInEx.dll</HintPath>
@@ -76,7 +76,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.dll</HintPath>
@@ -151,7 +151,7 @@
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.LocalizationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Networking, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\UnityEngine.Networking.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\UnityEngine.Networking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.ParticleSystemModule.dll</HintPath>
@@ -178,7 +178,7 @@
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.SharedInternalsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\UnityEngine.SpatialTracking.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\UnityEngine.SpatialTracking.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.SpriteMaskModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.SpriteMaskModule.dll</HintPath>
@@ -214,13 +214,13 @@
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.TilemapModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Timeline, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\UnityEngine.Timeline.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\UnityEngine.Timeline.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TLSModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.TLSModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\DysonSphereProgram.GameLibs.0.9.26.13026-r.0\lib\net45\UnityEngine.UI.dll</HintPath>
+      <HintPath>packages\DysonSphereProgram.GameLibs.0.10.28.21219-r.0\lib\net45\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIElementsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\UnityEngine.Modules.2022.1.17\lib\net45\UnityEngine.UIElementsModule.dll</HintPath>
@@ -288,7 +288,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetPath)" "$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\Default\BepInEx\plugins\11matt556-ReusableMetadata_DEV"
+    <PostBuildEvent>copy /Y "$(TargetPath)" "$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\dev\BepInEx\plugins\11matt556-ReusableMetadata_DEV
 copy /Y "$(TargetPath)" "$(ProjectDir)/ThunderstorePackage"
 copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/ThunderstorePackage"</PostBuildEvent>
   </PropertyGroup>
