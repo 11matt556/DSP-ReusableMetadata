@@ -28,6 +28,11 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 
 ## Change Log
 
+- Version 1.0.7:
+	- Bugfix: Fixed enableSandboxCheat config option
+	- Feature: New config option, sandboxMultiplier. Use this to specify desired metadata multiplier in sandbox mode when enableSandboxCheat=true.
+	- Feature: Loading a sandbox game when enableSandboxCheat=false will zero out the metadata of that game, restoring the 'vanilla' state of the save.
+
 - Version 1.0.6: 
 	- Fixed mistake in readme
 
@@ -66,7 +71,8 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 |---|---|---|---|
 useHighestProductionOnly|bool|false|When True, only metadata contributions from your highest production cluster will be available. Otherwise, Metadata production is unaffected. Metadata can be thought of as a 'high score' with this setting enabled.
 verboseLogging|bool|false|For debugging.
-enableSandboxCheat|bool|false|Intended for debugging and quick testing. Bumps sandbox metadata from None to 4x multipler. Use at your own risk.
+enableSandboxCheat|bool|false|Intended for debugging and quick testing. Applies sandboxMultiplier to sandbox games. Use at your own risk.
+sandboxMultiplier|float|1.0|Intended for debugging. 1 = 100%
 
 ## Ideas for additional features/changes
 - Update UI tooltip explanations to reflect the changes made by this mod
@@ -74,3 +80,4 @@ enableSandboxCheat|bool|false|Intended for debugging and quick testing. Bumps sa
 
 ## Known Issues
 - The "Total Realization" stat can be misleading/incorrect. Metadata is still counted in "Total Realization" even if the realization/consumption was not counted by this mod. This bug can happen in Vanilla, but is much easier to trigger when using this mod.
+- Only the statistics panel shows the correct multiplier in sandbox games when enableSandboxCheat is used.

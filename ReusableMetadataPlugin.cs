@@ -3,11 +3,40 @@ using HarmonyLib;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using System.Collections.Generic;
+using UnityEngine;
+using WinAPI;
+using System.IO;
+using System.Reflection;
+using Steamworks;
 
-// Note to self: Property... classes are actually 'lower' than the Game... objects. Generally, Property... objects seem to be called first (and by the Game... objects) to read and write the property file.
+/* ~~~~~~~~~~~~~~~~ */
+/*      NOTES       */
+/* ~~~~~~~~~~~~~~~~ */
 
+/*
+
+UIPropertyEntry
+
+long clusterSeedKey = this.gameData.GetClusterSeedKey();
+
+.totalText              = "value-1"     = "Meta Amount" (Top number)     = DSPGame.propertySystem.GetItemTotalProperty(this.itemId);
+.avaliableText          = "value-2"     = "Current Available Amount"     = DSPGame.propertySystem.GetItemAvaliableProperty(clusterSeedKey, this.itemId);
+.gamesaveProductionText = "value-3"     = "Current Game Contribution"    = this.gameData.history.GetPropertyItemProduction(this.itemId);
+.clusterProductionText  = "value-4"     = "Current Cluster Contribution" = DSPGame.propertySystem.GetItemProduction(clusterSeedKey, this.itemId);
+.gamesaveConsText       = "value-5"     = "Current Game Instantiation"   = this.gameData.history.GetPropertyItemComsumption(this.itemId);
+.clusterConsText        = "value-6"     = "Total Instantiation"          = DSPGame.propertySystem.GetItemTotalConsumption(this.itemId);
+
+*/
+
+/* 
+
+In Game Descriptions 
+"Meta Amount" (Top number) = "Equals the total amount of metadata obtained from every cluster, minus the total amount of used Metadata in every cluster. All metadata can be used for rebuilding icarus."
+"Current Available Amount" = "Current immediately instantiable metadata. You can't instantiate metadata contributed by the current cluster address, so it equals to the remaining amount minus contribution from current cluster address"
+
+*/
 // TODO: Update UI tooltips to match mod behaviour
-// TODO: See if there is a way to fix the inaccurate Realization value
+// TODO: See if there is a way to fix potentially inaccurate "Instantiation" stats that can occur when instantiating without saving. This does not seem to impact the available metadata calculations.
 
 namespace ReusableMetadata
 {
@@ -16,13 +45,13 @@ namespace ReusableMetadata
     {
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.6";
+        public const string pluginVersion = "1.0.7";
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;
         public static ConfigEntry<bool> useVerboseLogging;
         public static ConfigEntry<bool> useSandboxCheat;
+        public static ConfigEntry<float> sandboxMultiplier;
         public static IDictionary<int, long> topSeedForItem;
-
 
         public void Awake()
         {
@@ -40,7 +69,8 @@ namespace ReusableMetadata
 
             useHighestProductionOnly = Config.Bind("Behaviour", "useHighestProductionOnly", false, "When True, only metadata contributions from your highest production cluster will be available. Metadata can be thought of as a 'high score' with this setting enabled. When false, Metadata production is unchanged unchanged from Vanilla.");
             useVerboseLogging = Config.Bind("Debugging", "verboseLogging", false, "For debugging.");
-            useSandboxCheat = Config.Bind("Debugging", "enableSandboxCheat", false, "Bumps sandbox metadata from None to 4x multipler. Use at your own risk.");
+            useSandboxCheat = Config.Bind("Debugging", "enableSandboxCheat", false, "Sets sandbox metadata multiplier to sandboxMultiplier. Use at your own risk.");
+            sandboxMultiplier = Config.Bind("Debugging", "sandboxMultiplier", 1f, "Sets Sandbox Metadata multiplier to the entered value. 1 = 100%");
 
             harmony.PatchAll();
             logger.LogInfo(pluginName + " " + pluginVersion + " " + "Patch successful");
@@ -157,17 +187,132 @@ namespace ReusableMetadata
             return false;
         }
 
-        [HarmonyPatch(typeof(GameDesc))]
-        [HarmonyPatch("propertyMultiplier", MethodType.Getter)]
+        [HarmonyPatch(typeof(GameScenarioLogic))]
+        [HarmonyPatch("GameTick")]
         [HarmonyPostfix]
-        public static void Get_propertyMultiplier_Patch(GameDesc __instance, ref float __result)
+        public static void GameScenarioLogic_GameTick_Patch(long time, GameScenarioLogic __instance)
         {
-            // Give 4x multiplier in sandbox mode if useSandboxCheat is set.
-            // Note: Not really tested this.
-            if (__instance.isSandboxMode && ReusableMetadataPlugin.useSandboxCheat.Value)
+            // Make the metadata logic tick happen in sandbox mode
+            if (__instance.gameData.gameDesc.isSandboxMode && ReusableMetadataPlugin.useSandboxCheat.Value == true)
             {
-                __result = 4f;
+                __instance.propertyLogic.GameTick(time);
             }
         }
+
+        [HarmonyPatch(typeof(GameMain))]
+        [HarmonyPatch("Begin")]
+        [HarmonyPostfix]
+        public static void GameMain_Begin_Patch(GameMain __instance)
+        {
+            // If we are in sandbox mode and not using the cheat, reset all metadata production to 0
+            if (DSPGame.GameDesc.isSandboxMode && ReusableMetadataPlugin.useSandboxCheat.Value == false)
+            {
+                for (int itemId = 6001; itemId <= 6006; itemId++)
+                {
+                    GameMain.history.SetPropertyItemProduction(itemId, 0);
+                    DSPGame.propertySystem.SetItemProduction(DSPGame.GameDesc.seedKey64, itemId, 0);
+                }
+            }
+
+        }
+
+
+        [HarmonyPatch(typeof(PropertySystem))]
+        [HarmonyPatch("GetItemProduction")]
+        [HarmonyPostfix]
+        public static void PropertySystem_GetItemProduction_Patch(long seedKey,int itemId, PropertySystem __instance, ref int __result)
+        {
+            if (GameMain.gameScenario != null && seedKey == GameMain.data.GetClusterSeedKey())
+            {
+                int currentGameContribution = GameMain.history.GetPropertyItemProduction(itemId);
+                // Current game contribution cannot be greater than the current cluster, but this can happen if the property file is deleted.
+                // Fix this by setting the cluster contribution to equal the game contribution
+                // Note: This is technically a vanilla bug
+                if (__result < currentGameContribution )
+                {
+                    //__instance.SetItemProduction(itemId, currentGameContribution);
+                    __instance.SetItemProduction(seedKey, itemId, currentGameContribution);
+                    GameMain.history.SetPropertyItemProduction(itemId, currentGameContribution);
+                    __result = currentGameContribution;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(UIPropertyEntry))]
+        [HarmonyPatch("UpdateUIElements")]
+        [HarmonyPostfix]
+        public static void UIPropertyEntry_UpdateUIElements_Patch(UIPropertyEntry __instance)
+        {
+            // Update Metadata panel to display custom multiplier and allow button to be used in sandbox mode.
+            if (DSPGame.GameDesc.isSandboxMode && ReusableMetadataPlugin.useSandboxCheat.Value)
+            {
+                int avaliableProperty = DSPGame.propertySystem.GetItemAvaliableProperty(GameMain.data.GetClusterSeedKey(), __instance.itemId);
+                __instance.realizeButton.button.interactable = GameMain.mainPlayer.isAlive && avaliableProperty > 0;
+                __instance.productionRateText1.text = __instance.productionRateText0.text = string.Format("( x {0:0%} )", ReusableMetadataPlugin.sandboxMultiplier.Value);
+            }
+        }
+        
+        [HarmonyPatch(
+        typeof(PropertyLogic),
+        nameof(PropertyLogic.UpdateProduction)
+        )
+        ]
+        [HarmonyPrefix]
+        public static bool PropertyLogic_UpdateProduction_Patch(PropertyLogic __instance)
+        {
+
+            FactoryProductionStat[] factoryStatPool = __instance.gameData.statistics.production.factoryStatPool;
+            int factoryCount = __instance.gameData.factoryCount;
+            ClusterPropertyData clusterData = __instance.propertySystem.GetClusterData(__instance.gameData.GetClusterSeedKey());
+            ClusterPropertyData propertyData = __instance.gameData.history.propertyData;
+            //ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch");
+            foreach (int productId in PropertySystem.productIds)
+            {
+                int itemProduction1 = propertyData.GetItemProduction(productId);
+                int itemProduction2 = clusterData.GetItemProduction(productId);
+
+                //ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch itemProduction1={itemProduction1}");
+                //ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch itemProduction2={itemProduction2}");
+
+                long num = 0;
+                for (int index = 0; index < factoryCount; ++index)
+                {
+                    int productIndex = factoryStatPool[index].productIndices[productId];
+                    //ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch productIndex={productIndex}");
+                    if (productIndex > 0)
+                    {
+                        //ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch factoryStatPool[index].productPool[productIndex].total[3]={factoryStatPool[index].productPool[productIndex].total[3]}");
+                        num += factoryStatPool[index].productPool[productIndex].total[3];
+                    }
+                }
+
+                /* 
+                 * Just bodge a multiplier in here since manipulating minimalPropertyMultiplier with prefix and postfix was just asking for trouble.
+                 * Turns out changing minimalPropertyMultiplier can permanently change the multiplier value on save files, even after removing the mod.
+                */
+                float multiplier = 0;
+                if (ReusableMetadataPlugin.useSandboxCheat.Value && DSPGame.GameDesc.isSandboxMode) {
+                    multiplier = ReusableMetadataPlugin.sandboxMultiplier.Value;
+                }
+                else {
+                    multiplier = __instance.gameData.history.minimalPropertyMultiplier;
+                }
+
+                int count = (int)((double)num * (double)multiplier / 60.0 + 0.001);
+                if (count > itemProduction1)
+                    propertyData.SetItemProduction(productId, count);
+                if (count > itemProduction2)
+                    clusterData.SetItemProduction(productId, count);
+
+                if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                {
+                    ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch count={count}");
+                    ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch num={num}");
+                    ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch minimalPropertyMultiplier={multiplier}");
+                }
+            }
+            return false;
+        }
+        
     }
 }

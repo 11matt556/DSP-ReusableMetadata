@@ -1,6 +1,6 @@
 {
     "name": "ReusableMetadata",
-    "version_number": "1.0.6",
+    "version_number": "1.0.7",
     "website_url": "https://github.com/11matt556/DSP-ReusableMetadata",
     "description": "Allows metadata to be reused across multiple cluster seeds.",
     "dependencies": [
