@@ -290,7 +290,8 @@
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetPath)" "$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\dev\BepInEx\plugins\11matt556-ReusableMetadata_DEV
 copy /Y "$(TargetPath)" "$(ProjectDir)/ThunderstorePackage"
-copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/ThunderstorePackage"</PostBuildEvent>
+copy /Y "$(ProjectDir)/README.md" "$(ProjectDir)/ThunderstorePackage"
+copy /Y "$(ProjectDir)/manifest.json" "$(ProjectDir)/ThunderstorePackage"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\BepInEx.Core.5.4.17\build\BepInEx.Core.targets" Condition="Exists('packages\BepInEx.Core.5.4.17\build\BepInEx.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
