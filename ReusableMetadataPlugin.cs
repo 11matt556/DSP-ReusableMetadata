@@ -201,6 +201,7 @@ namespace ReusableMetadata
                     );
                 }
 
+                // Make sure we can't spend metadata from the current seed.
                 if (ReusableMetadataPlugin.useHighestProductionOnly.Value && seedKey != ReusableMetadataPlugin.topSeedForItem[itemId])
                 {
                     // This seed did not contribute to the total.
@@ -259,9 +260,8 @@ namespace ReusableMetadata
             if (GameMain.gameScenario != null && seedKey == GameMain.data.GetClusterSeedKey())
             {
                 int currentGameContribution = GameMain.history.GetPropertyItemProduction(itemId);
-
-                // Current game contribution cannot be greater than current cluster contribution.
-                // If the property file is deleted, this can happen. Fix by syncing cluster contribution.
+                // Deleting the property file can cause the current game contribution to exceed the cluster contribution
+                // Fix this by updating the cluster contribution to equal the game contribution.
                 if (__result < currentGameContribution)
                 {
                     __instance.SetItemProduction(seedKey, itemId, currentGameContribution);
@@ -305,7 +305,8 @@ namespace ReusableMetadata
             );
 
             ClusterPropertyData propertyData = __instance.gameData.history.propertyData;
-
+            if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch");
             foreach (int productId in PropertySystem.productIds)
             {
                 int itemProduction1 = propertyData.GetItemProduction(productId);
@@ -316,16 +317,21 @@ namespace ReusableMetadata
                 for (int index = 0; index < factoryCount; ++index)
                 {
                     int productIndex = factoryStatPool[index].productIndices[productId];
-
+                    if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                        ReusableMetadataPlugin.logger.LogInfo($"PropertyLogic_UpdateProduction_Patch productIndex={productIndex}");
                     if (productIndex > 0)
                     {
+                        if (ReusableMetadataPlugin.useVerboseLogging.Value)
+                            ReusableMetadataPlugin.logger.LogDebug($"PropertyLogic_UpdateProduction_Patch factoryStatPool[index].productPool[productIndex].total[3]={factoryStatPool[index].productPool[productIndex].total[3]}");
                         num += factoryStatPool[index].productPool[productIndex].total[3];
                     }
                 }
 
-                /*
-                 * Bodge multiplier here since manipulating minimalPropertyMultiplier with prefix/postfix can persist changes to save files.
-                 */
+                /* 
+                 * Changing minimalPropertyMultiplier in prefix/postfix would be easier, but this will persist in save files, **even after the mod is removed**.
+                 * To avoid this, we reimplement the entirety of the UpdateProduction() function so we may use a multiplier of our choosing.
+                 * This is the safest way to pevent unexpected savefile modifications, but could be problematic if the vanilla game changes the production calculation formula in a future update.
+                */
                 float multiplier;
 
                 if (ReusableMetadataPlugin.useSandboxCheat.Value && DSPGame.GameDesc.isSandboxMode)
