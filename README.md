@@ -28,6 +28,9 @@ Let me know if you have suggestions or issues at https://github.com/11matt556/DS
 
 ## Change Log
 
+- Version 1.0.8:
+	- Bugfix: Fixed issue with plugin not loading on the latest version. [Error  :  HarmonyX] Failed to patch long PropertySystem::GetItemTotalProperty(int itemId): System.Exception: Cannot assign method return type System.Int64 to __result type System.Int32 for method long PropertySystem::GetItemTotalProperty(int itemId)
+
 - Version 1.0.7:
 	- Bugfix: Fixed enableSandboxCheat config option
 	- Feature: New config option, sandboxMultiplier. Use this to specify desired metadata multiplier in sandbox mode when enableSandboxCheat=true.
