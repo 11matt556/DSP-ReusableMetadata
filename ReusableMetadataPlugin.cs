@@ -121,7 +121,7 @@ namespace ReusableMetadata
             {
                 ClusterPropertyData clusterPropertyData = __instance.propertyDatas[i];
 
-                long production = clusterPropertyData.GetItemProduction(itemId);
+                int production = clusterPropertyData.GetItemProduction(itemId);
 
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 {
