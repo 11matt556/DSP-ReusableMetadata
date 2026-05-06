@@ -183,6 +183,11 @@ namespace ReusableMetadata
 
             if (GameMain.data.GetClusterSeedKey() == seedKey)
             {
+                // Only subtract metadata consumed of current seed, not all seeds. This one line is really the main point of this whole mod...
+                // Important thing to remember! 
+                // GameMain.history.GetPropertyItemComsumption reads the game data itself. It will OVERRULE whatever is in the property file
+                // PropertySystem.GetItemConsumption reads from the property file itself! 
+                // I use GameMain.history here because it seems to prtevent the vanilla bug where metadata is lost when realizing and exiting without saving.
                 availableMetadata -= GameMain.history.GetPropertyItemComsumption(itemId);
 
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
