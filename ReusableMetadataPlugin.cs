@@ -344,12 +344,7 @@ namespace ReusableMetadata
                 }
 
                 long calculatedCount = (long)((double)num * (double)multiplier / 60.0 + 0.001);
-
-                int count = calculatedCount > int.MaxValue
-                    ? int.MaxValue
-                    : calculatedCount < int.MinValue
-                        ? int.MinValue
-                        : (int)calculatedCount;
+                int count = (int)Mathf.Clamp(calculatedCount, int.MinValue, int.MaxValue);
 
                 if (count > itemProduction1)
                 {
