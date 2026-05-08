@@ -68,7 +68,9 @@ namespace ReusableMetadata
                 "Behaviour",
                 "useHighestProductionOnly",
                 false,
-                "When true, only metadata contributions from your highest production cluster will be available. Metadata can be thought of as a high score with this setting enabled. When false, metadata production is summed across clusters."
+                "True: Only metadata contributions from the seed with the highest production will count towards the available metadata. " +
+                "Metadata can be thought of as a high score with this setting enabled.\n" +
+                "False: Metadata production from every seed will contribute to the metadata totals. This is how production is calculated in the vanilla game."
             );
 
             useVerboseLogging = Config.Bind(
@@ -82,14 +84,14 @@ namespace ReusableMetadata
                 "Debugging",
                 "enableSandboxCheat",
                 false,
-                "Sets sandbox metadata multiplier to sandboxMultiplier. Use at your own risk."
+                "Intended for debuging and testing. Allows sandbox games to contribute metadata."
             );
 
             sandboxMultiplier = Config.Bind(
                 "Debugging",
                 "sandboxMultiplier",
                 1f,
-                "Sets sandbox metadata multiplier to the entered value. 1 = 100%."
+                "Intended for debugging and testing. Applies sandboxMultiplier to sandbox games when enableSandboxCheat=true. Use at your own risk."
             );
 
             Harmony harmony = new Harmony(pluginGuid);
@@ -112,17 +114,19 @@ namespace ReusableMetadata
             long productionHighScore = 0L;
             long netTotalMetadata = 0L;
 
+            /*
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
             {
                 ReusableMetadataPlugin.logger.LogInfo("Current Seed " + currentClusterSeedKey);
             }
+            */
 
             for (int i = 0; i < __instance.propertyDatas.Count; i++)
             {
                 ClusterPropertyData clusterPropertyData = __instance.propertyDatas[i];
 
                 int production = clusterPropertyData.GetItemProduction(itemId);
-
+                /*
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 {
                     ReusableMetadataPlugin.logger.LogInfo(
@@ -131,6 +135,7 @@ namespace ReusableMetadata
                         " seed=" + clusterPropertyData.seedKey
                     );
                 }
+                */
 
                 // If useHighestProductionOnly is set, find the highest metadata value out of all clusters and ignore the others.
                 if (ReusableMetadataPlugin.useHighestProductionOnly.Value)
@@ -149,6 +154,7 @@ namespace ReusableMetadata
                 }
             }
 
+            /*
             if (ReusableMetadataPlugin.useVerboseLogging.Value)
             {
                 ReusableMetadataPlugin.logger.LogInfo(
@@ -156,6 +162,7 @@ namespace ReusableMetadata
                     " Calculated Total=" + netTotalMetadata
                 );
             }
+            */
 
             __result = netTotalMetadata;
             return false;
@@ -192,13 +199,8 @@ namespace ReusableMetadata
 
                 if (ReusableMetadataPlugin.useVerboseLogging.Value)
                 {
-                    ReusableMetadataPlugin.logger.LogInfo(
-                        $"GetItemAvaliableProperty_Patch ID={itemId} PropertySystem.GetItemConsumption={__instance.GetItemConsumption(seedKey, itemId)} seed={seedKey}"
-                    );
-
-                    ReusableMetadataPlugin.logger.LogInfo(
-                        $"GetItemAvaliableProperty_Patch ID={itemId} GameMain.history.GetPropertyItemComsumption={GameMain.history.GetPropertyItemComsumption(itemId)} seed={seedKey}"
-                    );
+                    //ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} PropertySystem.GetItemConsumption={__instance.GetItemConsumption(seedKey, itemId)} seed={seedKey}");
+                    //ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch ID={itemId} GameMain.history.GetPropertyItemComsumption={GameMain.history.GetPropertyItemComsumption(itemId)} seed={seedKey}");
                 }
 
                 // Make sure we can't spend metadata from the current seed.
@@ -214,12 +216,8 @@ namespace ReusableMetadata
 
             __result = availableMetadata;
 
-            if (ReusableMetadataPlugin.useVerboseLogging.Value)
-            {
-                ReusableMetadataPlugin.logger.LogInfo(
-                    $"GetItemAvaliableProperty_Patch_Result={__result} ID={itemId}"
-                );
-            }
+            //if (ReusableMetadataPlugin.useVerboseLogging.Value)
+            //    ReusableMetadataPlugin.logger.LogInfo($"GetItemAvaliableProperty_Patch_Result={__result} ID={itemId}");
 
             return false;
         }
