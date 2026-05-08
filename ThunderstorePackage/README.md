@@ -33,7 +33,7 @@ This is my preferred way to play because it provides a counterbalance to the add
 |2   | 75    | **125**   | 40           | 10             | **10**     | **5**   |
 |3   | 50    | 25        |**200**       | **25**         | 0          | 0       |
 			
-The bolded number is the quatity that the mod would select for each metadata type.
+The bolded number is the quantity that the mod would select for each metadata type.
 <br>So in this example, you would start a new seed with:
 
 |Meta-EM|Meta-Energy|Meta-Structure|Meta-Information|Meta-Gravity|Metaverse|	
