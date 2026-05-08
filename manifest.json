@@ -4,6 +4,6 @@
     "website_url": "https://github.com/11matt556/DSP-ReusableMetadata",
     "description": "Allows metadata to be reused across multiple seeds.",
     "dependencies": [
-        "xiaoye97-BepInEx-5.4.21"
+        "xiaoye97-BepInEx-5.4.17"
     ]
 }
