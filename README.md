@@ -70,8 +70,10 @@ verboseLogging|bool|false|For debugging.
 enableSandboxCheat|bool|false|Intended for debugging and testing. Applies sandboxMultiplier to sandbox games. Use at your own risk.
 sandboxMultiplier|float|1.0|Intended for debugging. 1 = 100%
 
-
 ## Change Log
+- Version 1.0.9:
+	- [Docs] Fixed typo in readme
+	- [Dev] Updated DLL assembly version to match the mod version.
 - Version 1.0.8:
 	- [Compat] Updated to game version 0.10.34.28524 
 		- Mod had failed to load due to `GetItemTotalProperty()` return changing from `int` to `long`. (PR #4)
