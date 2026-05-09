@@ -43,7 +43,7 @@ namespace ReusableMetadata
     {
         public const string pluginGuid = "11matt556.dysonsphereprogram.ReusableMetadata";
         public const string pluginName = "Reusable Metadata";
-        public const string pluginVersion = "1.0.10";
+        public const string pluginVersion = "1.0.11";
 
         public static ManualLogSource logger;
         public static ConfigEntry<bool> useHighestProductionOnly;

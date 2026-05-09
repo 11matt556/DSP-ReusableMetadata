@@ -71,10 +71,13 @@ enableSandboxCheat|bool|false|Intended for debugging and testing. Applies sandbo
 sandboxMultiplier|float|1.0|Intended for debugging. 1 = 100%
 
 ## Change Log
+- Version 1.0.11:
+	- [Docs] Fixed mismatched readme in Thunderstore package 
 - Version 1.0.10
+	- [Dev] Built release DLL with compiler optimizations enabled
 	- [Dev] Corrected BepInEx.BaseLib version in package dependency file
 	- [Dev] Updated unity package versions to match DSP unity version (2022.3.62)
-	- [Dev] BepInEx repo should be automatically added (NuGet.Config)
+	- [Dev] BepInEx repo should be automatically added to the project (NuGet.Config) 
 
 - Version 1.0.9:
 	- [Docs] Fixed typo in readme
