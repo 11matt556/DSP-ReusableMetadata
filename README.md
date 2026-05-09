@@ -71,6 +71,12 @@ enableSandboxCheat|bool|false|Intended for debugging and testing. Applies sandbo
 sandboxMultiplier|float|1.0|Intended for debugging. 1 = 100%
 
 ## Change Log
+- Version 1.0.10
+	- [Dev] Built release DLL with compiler optimizations enabled
+	- [Dev] Corrected BepInEx.BaseLib version in package dependency file
+	- [Dev] Updated unity package versions to match DSP unity version (2022.3.62)
+	- [Dev] BepInEx repo should be automatically added to the project (NuGet.Config) 
+
 - Version 1.0.9:
 	- [Docs] Fixed typo in readme
 	- [Dev] Updated DLL assembly version to match the mod version.
@@ -129,22 +135,27 @@ sandboxMultiplier|float|1.0|Intended for debugging. 1 = 100%
 
 1. Clone the repository
 2. Open the solution in Visual Studio (I used 2022)
-3. Navigate to `Tools->NuGet Package Manager->Package Manager Settings->Package Sources` and add the BepinEx repo.
-	- Name: BepInEx
-	- Source: https://nuget.bepinex.dev/v3/index.json
-4. Run `nuget restore` to install the dependencies
-	- You may need to update the version of BepInEx used and/or the DysonSphereProgram.GameLibs version to match the current game version. 
-	- This can be done by changingthe version of the packages in `Tools->NuGet Package Manager->Manage NuGet Packages for Solution`
-5. Navigate to the Dyson Sphere Program installation folder and select "Assembly-CSharp.dll"  
-	- It should be in ``{Steam Library}\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed``
-6. Right click the Project (Not solution) in the solution explorer and select Properties. 
-7. Navigate to the Build tab
-8. The first line copies the DLL to a dev profile I have configured in my r2modman installation and should look similar to the line below. Remove or adapt this line to your system as needed.
+3. Navigate to the Dyson Sphere Program installation folder and select "Assembly-CSharp.dll"  
+	-     {Steam Library}\steamapps\common\Dyson Sphere Program\DSPGAME_Data\Managed\Assembly-CSharp.dll
+4. Run `nuget restore` to install the dependencies. If you encounter errors during the restore:
+5. Right click the Project (Not solution) in the solution explorer and select Properties. 
+6. Navigate to the Build tab
+7. The first line copies the DLL to a dev profile I have configured in my r2modman installation and should look similar to the line below. Remove or adapt this line to your system as needed.
 	-      copy /Y "$(TargetPath)" "$(USERPROFILE)\AppData\Roaming\r2modmanPlus-local\DysonSphereProgram\profiles\dev\BepInEx\plugins\11matt556-ReusableMetadata_DEV
-9. Click `Build->Build Solution`
+8. Click `Build->Build Solution`
 	- If you encounter build errors due to missing unity references, try simply deleting them from the References in the solution explorer. 
 	- This can be normal because sometimes newer versions of the game remove redundant/unused unity files, but the visual studio project doesn't know this.
+9. Install it like any other mod (manually or or import the package into a ThunderStore-compatible mod manager, such as r2modman). 
 
-You can install it manually like any other mod or import the package into a ThunderStore-compatible mod manager, such as r2modman. 
+#### Tips
+
+The BepInEx should have been automatically added, but if not:
+
+	Tools->NuGet Package Manager->Package Manager Settings->Package Sources
+		- Name: BepInEx
+		- Source: https://nuget.bepinex.dev/v3/index.json
+
+You may need to update DysonSphereProgram.GameLibs to match your game version. (`Tools->NuGet Package Manager->Manage NuGet Packages for Solution`)
 
 **Remember to back up your save data and property folder (``%userprofile%\Documents\Dyson Sphere Program``)**
+
